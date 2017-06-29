@@ -26,20 +26,22 @@ public class BinPacking {
         int maxDimItemX, maxDimItemY;
         int nbSousConteneur;
         
-        Conteneur avionTest = new Conteneur(5,5);
+        Conteneur avionTest = new Conteneur(5,8);
         TabItem tabItemTest = new TabItem();
         
         avionTest.init();
         
-        Item item1 = new Item(3,2);
-        Item item2 = new Item(2,1);
-        Item item3 = new Item(3,3);
-        Item item4 = new Item(1,2);
-        Item item5 = new Item(1,1);
-        Item item6 = new Item(1,3);
-        Item item7 = new Item(2,2);
-        Item item8 = new Item(3,1);
         
+        Item item0 = new Item(3,2);
+        Item item1 = new Item(2,1);
+        Item item2 = new Item(3,3);
+        Item item3 = new Item(1,2);
+        Item item4 = new Item(1,1);
+        Item item5 = new Item(1,3);
+        Item item6 = new Item(2,2);
+        Item item7 = new Item(3,1);
+        
+        tabItemTest.AjoutItem(item0);
         tabItemTest.AjoutItem(item1);
         tabItemTest.AjoutItem(item2);
         tabItemTest.AjoutItem(item3);
@@ -47,15 +49,9 @@ public class BinPacking {
         tabItemTest.AjoutItem(item5);
         tabItemTest.AjoutItem(item6);
         tabItemTest.AjoutItem(item7);
-        tabItemTest.AjoutItem(item8);
+        
         
 
-        for (int i = 0 ; i < tabItemTest.getNbItem() ; i++){
-            
-            System.out.println("id item "+i+ " : "+tabItemTest.getItem(i).getID()+" "+tabItemTest.getItem(i).getTailleX()+" "+tabItemTest.getItem(i).getTailleY());
-            
-        }
-        
         for (int i = 0 ; i < tabItemTest.getNbItem() ; i++){
             
             System.out.println("id item "+i+ " : "+tabItemTest.getItem(i).getID()+" "+tabItemTest.getItem(i).getTailleX()+" "+tabItemTest.getItem(i).getTailleY());
@@ -186,10 +182,21 @@ public class BinPacking {
                             _conteneur.setXY(iii, jjj, _tabItem.getItem(k).getID());
                             compteurY++;
                             if(compteurY == _tabItem.getItem(k).getTailleY()) compteurX++;
-
+                            
 
                         }
                         jjj++;
+
+                    }
+                    if(compteurY != _tabItem.getItem(k).getTailleY()){
+                                
+                        for(int i=0 ; i<_conteneur.getTailleY() ; i++){
+
+                            if(_conteneur.getXY(iii, i) == _tabItem.getItem(k).getID())
+
+                                _conteneur.setXY(iii, i, -1);
+
+                        }
 
                     }
                     iii++;
