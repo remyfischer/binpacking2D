@@ -10,6 +10,10 @@ import java.util.*;
  *
  * @author remy.fischer
  */
+
+// classe TabItem permettant de contenir des Item et de faire des opérations sur ce tableau
+
+
 public class TabItem {
     
     private int nbItem;
@@ -46,6 +50,8 @@ public class TabItem {
         }
         
     }
+    
+    // fonction permettant d'ajouter des items dans le tableau
     
     public void initTabItem(){
         
@@ -92,6 +98,8 @@ public class TabItem {
         
     }
     
+    // fonction permettant de retourner la plus grande dimension X de tous les items présents dans le tableau
+    
     public int getPlusGrandeDimensionX(){
         
         int maxX = -1;
@@ -109,6 +117,8 @@ public class TabItem {
         return maxX;
         
     }
+    
+     // fonction permettant de retourner la plus grande dimension Y de tous les items présents dans le tableau
     
     public int getPlusGrandeDimensionY(){
         
@@ -128,7 +138,9 @@ public class TabItem {
         
     }
     
-    /*
+    // fonction permettant de trier les items par ordre décroissant de surface
+    // on utilise la méthode du tri par selection
+    
     public void triSelectionDecroissant(){
         
         int i, j, k, max;
@@ -137,15 +149,15 @@ public class TabItem {
         while (i < this.getNbItem() - 1 ){
             
             k = i;
-            max = this.getItem(k).getTailleX();
+            max = this.getItem(k).getTailleX() * this.getItem(k).getTailleY();
             _max = this.getItem(k);
             j=i+1;
             while(j <= this.getNbItem() -1){
                 
-                if(this.getItem(j).getTailleX() > max){
+                if(this.getItem(j).getTailleX() * this.getItem(j).getTailleY() > max){
                     
                     k = j;
-                    max = this.getItem(k).getTailleX();
+                    max = this.getItem(k).getTailleX() * this.getItem(k).getTailleY();
                     _max = this.getItem(k);
                     
                 }
@@ -158,7 +170,7 @@ public class TabItem {
             
         }
         
-    }*/
+    }
     
     
     

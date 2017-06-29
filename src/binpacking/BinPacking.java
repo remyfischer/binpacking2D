@@ -23,44 +23,8 @@ public class BinPacking {
         
         Scanner sc = new Scanner(System.in);
 
-        int tailleX;
-        int tailleY;
         int maxDimItemX, maxDimItemY;
         int nbSousConteneur;
-        double firstfit;
-        double firstfitDecreasing;
-
-        TabItem tabItem = new TabItem();
-
-        // int tailleY, tailleZ;
-
-
-       /* System.out.println("Veuillez saisir une taille X pour l'avion");
-        tailleX = sc.nextInt();
-        System.out.println("Veuillez saisir une taille Y pour l'avion");
-        tailleY = sc.nextInt();
-
-
-        tabItem.initTabItem();
-        tabItem.afficherContenu();
-
-        Conteneur avion = new Conteneur(tailleX, tailleY);
-
-        avion.init();
-        avion.afficherContenu();
-
-        maxDimItemX = tabItem.getPlusGrandeDimensionX();
-        maxDimItemY = tabItem.getPlusGrandeDimensionY();
-        
-        avion.afficherID();
-        
-        
-        // Il y a un problème car avion.split() renvoie le nombre de conteneurs +1 à chaque fois, d'où le -1.
-        nbSousConteneur = avion.split(maxDimItemX, maxDimItemY) - 1;
-        
-        avion.afficherID(); */
-        
-        // TEST
         
         Conteneur avionTest = new Conteneur(5,5);
         TabItem tabItemTest = new TabItem();
@@ -88,7 +52,13 @@ public class BinPacking {
 
         for (int i = 0 ; i < tabItemTest.getNbItem() ; i++){
             
-            System.out.println("id item "+i+ " : "+tabItemTest.getItem(i).getID());
+            System.out.println("id item "+i+ " : "+tabItemTest.getItem(i).getID()+" "+tabItemTest.getItem(i).getTailleX()+" "+tabItemTest.getItem(i).getTailleY());
+            
+        }
+        
+        for (int i = 0 ; i < tabItemTest.getNbItem() ; i++){
+            
+            System.out.println("id item "+i+ " : "+tabItemTest.getItem(i).getID()+" "+tabItemTest.getItem(i).getTailleX()+" "+tabItemTest.getItem(i).getTailleY());
             
         }
         
@@ -103,223 +73,137 @@ public class BinPacking {
         
         avionTest.afficherValues();
         
-        firstfit=firstFit(tabItemTest, avionTest, nbSousConteneur);
-        
-        avionTest.afficherValues();
-        
-        // END TEST
-        
-        
-        
-        /*
-        
-        Conteneur cFirstFit = new Conteneur();
-        
-        cFirstFit.clone(avion);
-        
-        Conteneur cFirstFitD = new Conteneur();
-        
-        cFirstFitD.clone(avion);
-        
-        firstfit = firstFit(tabItem, cFirstFit, nbSousConteneur);
-        
-        cFirstFit.afficherValues();
-        
-        */
-        
-        
-        /*
-        firstfit = firstFit(tabItem, cFirstFit, nbSousConteneur);
-        firstfitDecreasing = firstFitDecreasing(tabItem, cFirstFitD, nbSousConteneur);
-        
-        cFirstFit.afficherContenu();
-        cFirstFitD.afficherContenu();
-        
-        System.out.println("Methode First Fit : "+firstfit+"% de remplissage");
-        System.out.println("Methode First Fit Decreasing : "+firstfitDecreasing+"% de remplissage");
-        
-        if (firstfit >= firstfitDecreasing){
-            
-            System.out.println("La solution firstfit est la plus optimisée, voici le résultat");
-            avion.clone(cFirstFit);
-            avion.afficherContenu();
-            
-        }
-        
-        if (firstfit < firstfitDecreasing){
-            
-            System.out.println("La solution firstfit decreasing est la plus optimisée, voici le résultat");
-            avion.clone(cFirstFitD);
-            avion.afficherContenu();
-        }
-        
-        
-        //firstfit = firstFit(tabItem, avion, nbSousConteneur);
-        
-        //avion.afficherContenu();*/
-    
-    
-    
+        testOptimisationAlgorithmeTri(tabItemTest, avionTest, nbSousConteneur);
         
     }
     
+    // fonction permettant de lancer les deux algorithmes de tri et de retenir le plus optimisé    
+    public static void testOptimisationAlgorithmeTri(TabItem _tabItem, Conteneur _conteneur, int _nbSousconteneur){
+        
+        Conteneur cFirstFit = new Conteneur();
+        Conteneur cFirstFitDecreasing = new Conteneur();
+        
+        cFirstFit.clone(_conteneur);
+        cFirstFitDecreasing.clone(_conteneur);
+        
+        double firstFit;
+        double firstFitDecreasing;
+        
+        firstFit = firstFit(_tabItem, cFirstFit, _nbSousconteneur);
+        firstFitDecreasing = firstFitDecreasing(_tabItem, cFirstFitDecreasing, _nbSousconteneur);
+        
+        System.out.println("Methode First Fit : "+firstFit+"% de remplissage");
+        System.out.println("Methode First Fit Decreasing : "+firstFitDecreasing+"% de remplissage");
+        
+        if (firstFit >= firstFitDecreasing){
+            
+            System.out.println("La solution firstfit est la plus optimisée, voici le résultat");
+            _conteneur.clone(cFirstFit);
+            _conteneur.afficherValues();
+            
+        }
+        
+        if (firstFit < firstFitDecreasing){
+            
+            System.out.println("La solution firstfit decreasing est la plus optimisée, voici le résultat");
+            _conteneur.clone(cFirstFitDecreasing);
+            _conteneur.afficherValues();
+        }
+        
+        
+    }
+    
+    // algorithme en firstfit
+    // firstfit : vérifie si l'item rentre, si il rentre on le place dans le conteneur, si il ne rentre pas on passe à l'item suivant
+    // et ainsi de suite jusqu'à avoir essayé de placer tous les item
+    
+    // Pour ce faire, on vérifie si un item rentre dans un sous conteneur, si il trouve un sous conteneur dans lequel il rentre
     public static double firstFit(TabItem _tabItem, Conteneur _conteneur, int _nbSousConteneur){
         
         int compteurX;
         int compteurY;
         boolean sousConteneurLibre;
         int cptSousConteneur;
-        int numConteneur;
         double remplissage = 0;
-        int indiceX;
-        int indiceY;
-        boolean _indiceX;
         
-        
-        // On parcours le tableau contenant tous les item pour les places un par un
         for(int k = 0 ; k < _tabItem.getNbItem() ; k++){
-            
-            // Initialisation des variables qui vont être vérifiées par la suite
+        
+            int ii = 0;
+            int jj = 0;
             sousConteneurLibre = false;
-            cptSousConteneur = 1;
-            numConteneur = 0;
+            cptSousConteneur = 0;
             
-            /* Boucle vérifiant si un sous conteneur est libre pour un item donné (on sort de cette boucle si on trouve un conteneur ou si on a vérifié 
-             tous les conteneurs. */
             
+            // boucle permettant de vérifier si il y a un sous conteneur permettant d'accueillir l'item
+            // sousConteneurLibre prend la valeur true si c'est le cas
             do{
-                // Initialisation des variables pour se placer au début du conteneur
                 
-                compteurX = 0;
-                compteurY = 0;
-                indiceX = 0;
-                indiceY = 0;
-                int valeurPrec = 0;
-                int sortieRoutine=0;
-                
-                // Boucle permettant de tourner dans le sous conteneur dans les valeurs X
-                for(int i = 0 ; i < _conteneur.getTailleX() ; i++){
-                    
-                    compteurY=0;
-                    _indiceX=false;
-                    
-                    // Boucle permettant de tourner dans le sous conteneur dans les valeurs Y
-                    for(int j = 0 ; j < _conteneur.getTailleY() ; j++){
-                        
-                        //if(sousConteneurLibre == true) break;
-                        
-                        if(sortieRoutine != 1 ){
-                            
-                            System.out.println(_conteneur.getID(i, j)+" "+cptSousConteneur+" "+_conteneur.getXY(i,j));
-                        
-                            if(_conteneur.getID(i,j) == cptSousConteneur && _conteneur.getXY(i, j) == -1){
-
-                                compteurY++;
-                                valeurPrec = 1;
-
-                            } else if (sortieRoutine != 1) indiceY=j+1;
-
-                            if (valeurPrec == 0) compteurY=0;
-
-                            if(compteurY == _tabItem.getItem(k).getTailleY()){
-
-                                compteurX++;
-                                _indiceX = true;
-
-                            }
-
-                            if(compteurX == _tabItem.getItem(k).getTailleX()){
-
-                                sousConteneurLibre=true;
-
-                            }
-
-                            if (sousConteneurLibre == true ) sortieRoutine = 1;
-                            
-                        }
-
-                           
-                        
-                        /*if(_conteneur.getID(i, j) == cptSousConteneur && _conteneur.getXY(i, j) == -1) compteurY++;
-                        else {
-                            
-                            compteurY = 0;
-                            indiceY = j+1;
-                            
-                        }
-                        if(compteurY == _tabItem.getItem(k).getTailleY()){
-                            
-                            compteurX++;
-                            _indiceX = true;
-                            //break;
-                            
-                        }
-                        if(compteurX == _tabItem.getItem(k).getTailleX()){
-                            
-                            sousConteneurLibre = true;
-                            
-                        }*/
-                        
-                    }
-                    
-                    if(_indiceX != true && sortieRoutine != 1) indiceX=i+1;
-                    
-                    //if(_indiceX != true) indiceX = i+1;
-                    //if(sousConteneurLibre == true) break;
-                    
-                    
-                }
-                
-                if(sousConteneurLibre == true) break;
                 cptSousConteneur++;
+                ii=0;
+                compteurX=0;
+                compteurY=0;
                 
-            } while(sousConteneurLibre = false && cptSousConteneur <= _nbSousConteneur);
-            
-            if(sousConteneurLibre = true){
-                
-                compteurX = 0;
-                compteurY = 0;
-                
-                
-                
-                for (int i = 0 ; i < _conteneur.getTailleX() ; i++){
-                    
-                    for (int j = 0 ; j < _conteneur.getTailleY() ; j++){
-                        
-                        if(_conteneur.getID(i, j) == cptSousConteneur && _conteneur.getXY(i, j) == -1 ){
+                while( ii < _conteneur.getTailleX() && sousConteneurLibre == false){
+
+                    compteurY = 0;
+
+                    while ( jj < _conteneur.getTailleY() && compteurY != _tabItem.getItem(k).getTailleY() ){
+
+                        if(_conteneur.getXY(ii, jj) == -1 && cptSousConteneur == _conteneur.getID(ii, jj)){
                             
-                            _conteneur.setXY(i, j, _tabItem.getItem(k).getID());
-                            _conteneur.afficherValues();
                             compteurY++;
                             
                         }
-                        if(compteurY == _tabItem.getItem(k).getTailleY()){
-                            
-                            compteurX++;
-                            break;
-                        }
-                        
+                        jj++;
+
                     }
-                    if(compteurX == _tabItem.getItem(k).getTailleX()) break;
                     
-                    
+                    if(compteurY == _tabItem.getItem(k).getTailleY()) compteurX++;
+                    if(compteurX == _tabItem.getItem(k).getTailleX()) sousConteneurLibre = true;
+                    ii++;
+                    jj=0;
+
                 }
-                
-                /*for(int i = indiceX ; i < indiceX + _tabItem.getItem(k).getTailleX() ; i++){
-                    
-                    for(int j = indiceY ; j < indiceY + _tabItem.getItem(k).getTailleY() ; j++){
-                        
-                        if(i >= _conteneur.getTailleX() || j >= _conteneur.getTailleY()) break;
-                        _conteneur.setXY(i, j, _tabItem.getItem(k).getID());
-                        
+
+
+            } while (cptSousConteneur <= _nbSousConteneur && sousConteneurLibre==false);
+            
+            
+            // si un sous conteneur est libre (sousConteneurLibre == true), on le place dans ce sous-conteneur
+            if(sousConteneurLibre == true){
+            
+            compteurX=0;
+            compteurY=0;
+            int iii=0;
+            int jjj=0;
+            
+                while(iii < _conteneur.getTailleX() && compteurX < _tabItem.getItem(k).getTailleX()){
+
+                    while(jjj < _conteneur.getTailleY() && compteurY < _tabItem.getItem(k).getTailleY()){
+
+                        if(cptSousConteneur == _conteneur.getID(iii, jjj) && _conteneur.getXY(iii, jjj)==-1){
+
+                            _conteneur.setXY(iii, jjj, _tabItem.getItem(k).getID());
+                            compteurY++;
+                            if(compteurY == _tabItem.getItem(k).getTailleY()) compteurX++;
+
+
+                        }
+                        jjj++;
+
                     }
-                    
-                }*/
+                    iii++;
+                    jjj=0;
+                    compteurY=0;
+
+                }
                 
             }
             
-            
         }
+        
+        // cette boucle permet à la fin du traitement de tous les item de définir le pourcentage de surface remplie du conteneur
+        // (plus on s'approche de 100%, plus l'algorithme aura été efficace)
         
         for(int i = 0 ; i < _conteneur.getTailleX() ; i++){
             
@@ -336,81 +220,9 @@ public class BinPacking {
         return remplissage;
         
     }
-    
-    /*public static double firstFit(TabItem _tabItem, Conteneur _conteneur, int _nbSousConteneur){
-        
-        int compteur;
-        boolean sousConteneurLibre;
-        int cptSousConteneur;
-        int i;
-        int numConteneur;
-        double remplissage = 0;
-       
-        for(int k = 0 ; k < _tabItem.getNbItem() ; k++){
-           
-           sousConteneurLibre = false;
-           cptSousConteneur = 1;
-           numConteneur = 0;
-           i = 0;
-           
-            do{
-
-                compteur = 0;
-                if ( i >= _conteneur.getTailleX()) break;
-                
-                do{
-                    
-                    //if ( i >= _conteneur.getTailleX()) break;
-                    if(_conteneur.getX(i)== -1) compteur++;
-                    i++;
-                    if ( i >= _conteneur.getTailleX()) break;
-                    
-                } while (_conteneur.getID(i) == cptSousConteneur);
-
-                if (compteur >= (_tabItem.getItem(k).getTailleX())){ 
-
-                    sousConteneurLibre = true;
-                    numConteneur = cptSousConteneur;
-
-                }
-
-                cptSousConteneur++;
-
-            } while(sousConteneurLibre == false && cptSousConteneur <= _nbSousConteneur);
-
-            if (sousConteneurLibre == true ){
-
-                i=0;
-
-
-                while (_conteneur.getID(i) != numConteneur || _conteneur.getX(i) != -1 ){
-                    
-                    i++;
-
-                }
-
-                for(int j = i ; j < _tabItem.getItem(k).getTailleX()+i ; j++){
-
-                    _conteneur.setX(j, _tabItem.getItem(k).getID());
-
-                }
-
-
-            }
-        }
-        
-        for (i = 0 ; i < _conteneur.getTailleX() ; i++){
-            
-            if (_conteneur.getX(i) != -1) remplissage++;
-            
-        }
-        
-        remplissage = (remplissage/_conteneur.getTailleX())*100;
-        return remplissage;
-        
-    
-    
-    }
+     
+    // algorithme first fit decreasing
+    // même principe que le first fit sauf que nous aurons au préalable classé les items du plus grand au plus petit
     
     public static double firstFitDecreasing(TabItem _tabItem, Conteneur _conteneur, int _nbSousConteneur){
         
@@ -421,6 +233,6 @@ public class BinPacking {
         
         return remplissage;
         
-    }*/
+    }
     
 }

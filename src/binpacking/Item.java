@@ -10,6 +10,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author remy.fischer
  */
+
+// classe d'item correspondant aux caisses qui seront rentrées dans l'avion
+// les items sont considérés à deux dimensions 
+
 public class Item {
     
     private int tailleX;

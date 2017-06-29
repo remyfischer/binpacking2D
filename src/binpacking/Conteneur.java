@@ -9,6 +9,16 @@ package binpacking;
  *
  * @author remy.fischer
  */
+
+// classe conteneur correspondant à l'avion 
+// l'avion est considéré comme étant à deux dimensions
+// des fonctions permettent d'effectuers des opérations sur le conteneur.
+
+// on crée un conteneur qui est un tableau à trois dimensions :
+// une dimension pour l'axe X
+// une dimension pour l'axe Y
+// une troisième dimension permettant d'avoir une vision sur les sous conteneurs et sur les item présent dans le conteneur
+
 public class Conteneur {
     
     private int tailleX;
@@ -75,6 +85,9 @@ public class Conteneur {
         
     }
 
+    
+    // cette fonction permet de définir tous les items à -1 (correspond à vide)
+    // cette fonction permet de définir tous les sous conteneurs à 0
     public void init(){
         
         for(int i = 0 ; i < tailleX ; i++){
@@ -92,6 +105,8 @@ public class Conteneur {
         
     }
     
+    
+    // permet de cloner un conteneur
     public void clone(Conteneur _source){
         
         this.setTailleXY(_source.getTailleX(), _source.getTailleY());
@@ -172,6 +187,7 @@ public class Conteneur {
         
     }
     
+    // permet de séparer un conteneur en plusieurs sous conteneurs ce qui permet d'optimiser le tri ensuite
     public int split(int maxSplitX, int maxSplitY){
         
         int[] tailleRestante = new int[tailleY];
