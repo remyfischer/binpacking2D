@@ -10,6 +10,9 @@ import java.util.*;
  *
  * @author remy.fischer
  */
+
+//Binpacking resolution algorithm project
+
 public class BinPacking {
         
 
